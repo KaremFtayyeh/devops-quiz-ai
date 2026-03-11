@@ -1,0 +1,56 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  build-test-push:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build image
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-quiz-ai:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-quiz-ai:${{ github.sha }}
+
+      - name: Smoke test
+        run: |
+          docker run -d -p 5000:5000 --name test-container ${{ secrets.DOCKERHUB_USERNAME }}/devops-quiz-ai:latest
+          sleep 5
+          curl http://localhost:5000/api/health | grep ok
+          docker stop test-container
+          docker rm test-container
+
+      - name: Push image
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-quiz-ai:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-quiz-ai:${{ github.sha }}
+
+  deploy:
+    needs: build-test-push
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - run: curl -X POST ${{ secrets.RENDER_DEPLOY_URL }}
