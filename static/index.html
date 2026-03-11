@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevOps AI Quiz</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>DevOps AI Quiz</h1>
+    <p class="subtitle">Systems Deployment and Implementation Course</p>
+    <p class="student-info">Student ID: <span id="student-id-top">loading…</span></p>
+
+    <!-- Setup panel -->
+    <div id="setup-panel">
+      <label for="topic-select">Topic</label>
+      <select id="topic-select">
+        <option value="Continuous Integration">Continuous Integration</option>
+        <option value="Continuous Delivery">Continuous Delivery</option>
+        <option value="Continuous Deployment">Continuous Deployment</option>
+        <option value="Version Control">Version Control</option>
+        <option value="Docker and Containers">Docker and Containers</option>
+        <option value="Infrastructure as Code">Infrastructure as Code</option>
+        <option value="DevOps Culture">DevOps Culture</option>
+      </select>
+
+      <label for="difficulty-select">Difficulty</label>
+      <select id="difficulty-select">
+        <option value="beginner">Beginner</option>
+        <option value="intermediate" selected>Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+
+      <button id="start-btn" onclick="startQuiz()">Generate Quiz</button>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden">
+      <p>Generating questions with Gemini...</p>
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Quiz panel -->
+    <div id="quiz-panel" class="hidden">
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+      <p id="question-counter"></p>
+      <h2 id="question-text"></h2>
+      <div id="options-list"></div>
+      <div id="feedback" class="hidden">
+        <p id="feedback-text"></p>
+        <p id="explanation-text" class="explanation"></p>
+        <button id="ai-explain-btn" class="hidden ai-btn" onclick="fetchExplanation()">
+          Ask AI to Explain
+        </button>
+        <div id="ai-explanation" class="ai-box hidden"></div>
+        <button id="next-btn" onclick="nextQuestion()">Next</button>
+      </div>
+    </div>
+
+    <!-- Results panel -->
+    <div id="results-panel" class="hidden">
+      <h2>Session Complete</h2>
+      <p id="score-text"></p>
+      <button id="recommend-btn" class="ai-btn" onclick="fetchRecommendation()">
+        Get Study Recommendations
+      </button>
+      <div id="recommendation-box" class="ai-box hidden"></div>
+      <button onclick="resetQuiz()">Try Another Topic</button>
+    </div>
+
+    <div id="error-msg" class="hidden error"></div>
+  </div>
+
+  <!-- Student ID footer — populated by app.js on load -->
+  <footer id="student-footer">
+    Student ID: <span id="student-id-display">loading…</span>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
